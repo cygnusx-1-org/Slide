@@ -3,8 +3,8 @@ package me.edgan.redditslide.util;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Collections;
 import net.dean.jraw.RedditClient;
-import net.dean.jraw.http.HttpRequest;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -13,7 +13,8 @@ import org.jspecify.annotations.NullMarked;
  * <p>For about a second after a gallery or an inline-image self post is submitted, its {@code
  * media_metadata} reports each image as {@code "status": "unprocessed"}. Opening the post in that
  * window renders a gallery as a text post and inline images as "Processing img" placeholders, so
- * the submit paths poll {@code /api/info} until no entry is unprocessed before opening it.
+ * the submit paths poll the post, through {@link RedditLookups} since Reddit blocks {@code
+ * /api/info} for some client ids, until no entry is unprocessed before opening it.
  */
 @NullMarked
 public final class RedditMediaProcessing {
@@ -21,7 +22,7 @@ public final class RedditMediaProcessing {
     @VisibleForTesting public static final int MAX_TRIES = 10;
     @VisibleForTesting public static final long INTERVAL_MS = 500;
 
-    /** Fetches the {@code /api/info} reply for the post; {@code null} when there is none. */
+    /** Fetches an {@code /api/info}-shaped reply for the post; {@code null} when there is none. */
     @VisibleForTesting
     public interface InfoFetcher {
         @Nullable JsonNode fetch() throws Exception;
@@ -44,13 +45,16 @@ public final class RedditMediaProcessing {
     public static void awaitProcessed(RedditClient client, String fullname) {
         awaitProcessed(
                 () -> {
-                    HttpRequest request =
-                            client.request()
-                                    .path("/api/info")
-                                    .query("id", fullname, "raw_json", "1")
-                                    .get()
-                                    .build();
-                    return client.execute(request).getJson();
+                    // Only an account posts, so the setting decides, read on every try.
+                    LookupResponse answer =
+                            RedditLookups.lookup(
+                                    client,
+                                    Collections.singletonList(new ThingRef(fullname, null)),
+                                    RedditLookups.loggedInMode());
+                    if (!answer.isSuccessful()) {
+                        throw answer.failure();
+                    }
+                    return answer.json;
                 },
                 Thread::sleep);
     }

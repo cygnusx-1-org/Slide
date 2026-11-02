@@ -2,15 +2,20 @@ package me.edgan.redditslide.Random
 
 import android.content.Context
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import java.util.ArrayDeque
 import java.util.EnumMap
 import java.util.Locale
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.atomic.AtomicBoolean
 import me.edgan.redditslide.Authentication
 import me.edgan.redditslide.Random.RandomSubredditList.Flavour
 import me.edgan.redditslide.SettingValues
 import me.edgan.redditslide.UserSubscriptions
+import me.edgan.redditslide.util.InfoMode
 import me.edgan.redditslide.util.LogUtil
+import me.edgan.redditslide.util.LookupResponse
+import me.edgan.redditslide.util.RedditLookups
 import net.dean.jraw.paginators.Sorting
 import net.dean.jraw.paginators.SubredditPaginator
 import net.dean.jraw.paginators.TimePeriod
@@ -28,7 +33,9 @@ import net.dean.jraw.paginators.TimePeriod
  * Candidates come from a hosted list ([RandomSubredditList]) that is an archive, so a candidate is
  * not yet a subreddit: roughly one name in six was banned by the time the list was last measured,
  * and more go private. A batch of 100 is checked against `/api/info` in a single request and the
- * survivors are pooled, so one round trip covers about 99 further picks.
+ * survivors are pooled, so one round trip covers about 99 further picks. Where Reddit blocks
+ * `/api/info` for the client id, candidates are checked one at a time instead, up to the first
+ * that passes.
  */
 object RandomSubreddits {
 
@@ -48,6 +55,13 @@ object RandomSubreddits {
      * essentially impossible, but an unbounded redraw on a persistently empty result would spin.
      */
     private const val MAX_BATCHES = 3
+
+    /**
+     * How many candidates of a batch are checked one at a time, through their about pages, when
+     * `/api/info` is not used. The first that passes ends it, so a pick costs one or two small
+     * requests rather than a hundred, and a run of dead names cannot spend the rate limit.
+     */
+    private const val MAX_ABOUT_CHECKS = 10
 
     /**
      * How many posts a candidate must return before it counts as somewhere worth landing. A
@@ -245,27 +259,93 @@ object RandomSubreddits {
                     refreshFired = true
                 }
 
-                pool.addAll(live(validate(candidates)))
+                pool.addAll(survivors(candidates))
             }
             return pool.poll()
         }
     }
 
+    /** The usable names among [names], checked the way the current account checks things. */
+    private fun survivors(names: List<String>): List<String> {
+        val client = Authentication.reddit ?: return emptyList()
+        return survivors(
+            names,
+            RedditLookups.currentMode(),
+            RedditLookups.anonymousInfoBlocked,
+            { batch ->
+                RedditLookups.get(
+                    client,
+                    "/api/info",
+                    mapOf("sr_name" to batch.joinToString(","), "raw_json" to "1"),
+                )
+            },
+            { name -> RedditLookups.get(client, "/r/$name/about", mapOf("raw_json" to "1")) },
+        )
+    }
+
     /**
-     * One `GET /api/info?sr_name=...` for the whole batch. Checking names one at a time through
-     * `/r/<name>/about.json` would also work and would say *why* each one is unusable, but it costs
-     * a hundred times the requests to learn something a random pick does not need.
+     * One `GET /api/info?sr_name=...` for the whole batch, unless [mode] rules it out. Checking
+     * names one at a time through `/r/<name>/about` also works and says *why* each one is unusable,
+     * but costs a request per name, so it is the fallback: for an account with the old way off,
+     * and for the anonymous account once `/api/info` has answered it with a 403.
      */
-    private fun validate(names: List<String>): JsonNode? {
-        val client = Authentication.reddit ?: return null
-        return try {
-            val query = mapOf("sr_name" to names.joinToString(","), "raw_json" to "1")
-            val request = client.request().path("/api/info").query(query).get().build()
-            client.execute(request).json
-        } catch (e: Exception) {
-            LogUtil.e(e, "RandomSubreddits.validate failed")
-            null
+    internal fun survivors(
+        names: List<String>,
+        mode: InfoMode,
+        blocked: AtomicBoolean,
+        info: (List<String>) -> LookupResponse,
+        about: (String) -> LookupResponse,
+    ): List<String> {
+        if (mode == InfoMode.ONLY || (mode == InfoMode.FIRST && !blocked.get())) {
+            val answer = info(names)
+            if (answer.isSuccessful) {
+                return live(answer.json)
+            }
+            LogUtil.e(answer.failure(), "RandomSubreddits.validate failed")
+            if (mode == InfoMode.ONLY || answer.code != 403) {
+                return emptyList()
+            }
+            blocked.set(true)
         }
+        return firstLive(names, about)
+    }
+
+    /**
+     * The first of [names], at most [MAX_ABOUT_CHECKS] of them, whose about page passes [live]: a
+     * pool of one. Banned (404), private and quarantined (403) subreddits are skipped; a rate
+     * limit, a server error or no answer at all stops the check, since asking the next name would
+     * fare no better.
+     */
+    internal fun firstLive(names: List<String>, about: (String) -> LookupResponse): List<String> {
+        for (name in names.take(MAX_ABOUT_CHECKS)) {
+            val answer = about(name)
+            if (answer.isTransient) {
+                LogUtil.e(answer.failure(), "RandomSubreddits.firstLive stopped at $name")
+                return emptyList()
+            }
+            if (!answer.isSuccessful) {
+                continue
+            }
+            val found = live(aboutListing(answer.json))
+            if (found.isNotEmpty()) {
+                return found
+            }
+        }
+        return emptyList()
+    }
+
+    /**
+     * An `/r/<name>/about` answer as the one-child listing [live] reads, so a subreddit checked on
+     * its own passes by exactly the rules a batch does. Null when it is not a subreddit.
+     */
+    internal fun aboutListing(about: JsonNode?): JsonNode? {
+        if (about == null || about.path("kind").asText() != "t5") {
+            return null
+        }
+        val root = JsonNodeFactory.instance.objectNode()
+        root.put("kind", "Listing")
+        root.putObject("data").putArray("children").add(about)
+        return root
     }
 
     /**

@@ -2,6 +2,8 @@ package me.edgan.redditslide.SubmissionViews;
 
 import android.os.AsyncTask;
 
+import androidx.annotation.Nullable;
+
 import com.lusfold.androidkeyvaluestore.KVStore;
 import com.lusfold.androidkeyvaluestore.core.KVManger;
 
@@ -17,7 +19,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.SavedPostCache;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.ThingRef;
 
+import net.dean.jraw.models.Comment;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.paginators.UserSavedPaginator;
 
@@ -31,9 +35,12 @@ import net.dean.jraw.paginators.UserSavedPaginator;
  * background {@link #reconcile()}: it walks the live {@code /saved} listing and promotes any marker
  * missing from it into the visible Local Saved collection. Doing this at save time means the tab is
  * pre-processed and loads instantly (its own reconcile call is then a no-op). No post/comment body
- * is cached -- promoted items are fetched normally via {@code /api/info} when the viewer loads them.
+ * is cached -- promoted items are fetched normally when the viewer loads them.
  *
- * <p>Markers live in {@link KVStore} so the viewer can reuse the same load path as Read Later.
+ * <p>Markers live in {@link KVStore} so the viewer can reuse the same load path as Read Later. A
+ * marker's value is the save time, and for a comment {@code <time>:<postId>}: Reddit cannot fetch a
+ * comment on its own, only within its post, and {@code /api/info}, which could, is blocked for some
+ * client ids. Markers written before the post id was kept have none.
  */
 public class LocalSaved {
 
@@ -49,6 +56,9 @@ public class LocalSaved {
     /** Key prefix for saves awaiting reconciliation. */
     public static final String PENDING_PREFIX = "localsavedpending_";
 
+    /** Between the save time and a comment's post id in a marker's value. */
+    private static final char POST_ID_SEPARATOR = ':';
+
     /** Ensures only one {@link #reconcile()} walk runs at a time (overlaps just no-op). */
     private static final AtomicBoolean RECONCILING = new AtomicBoolean(false);
 
@@ -60,7 +70,7 @@ public class LocalSaved {
         KVStore.getInstance()
                 .insertOrUpdate(
                         PENDING_PREFIX + thing.getFullName(),
-                        String.valueOf(System.currentTimeMillis()));
+                        markerValue(System.currentTimeMillis(), postIdOf(thing)));
         // Detect at save time: reconcile in the background now (off any caller thread) so the
         // Local Saved tab is already up to date and loads instantly when the user opens it. A save
         // of an already-removed post is promoted immediately; a still-live post is found near the
@@ -78,9 +88,33 @@ public class LocalSaved {
         m.delete(PROMOTED_PREFIX + thing.getFullName());
     }
 
-    /** Promoted fullnames, newest-saved first. */
-    public static ArrayList<String> getPromoted() {
-        ArrayList<String> ids = new ArrayList<>();
+    /** The post a saved comment belongs to, as a bare id; null for a post or when unknown. */
+    @Nullable
+    static String postIdOf(Contribution thing) {
+        if (!(thing instanceof Comment)) return null;
+        String linkId = ((Comment) thing).getSubmissionId();
+        if (linkId == null) return null;
+        if (linkId.startsWith("t3_")) linkId = linkId.substring(3);
+        return linkId.isEmpty() ? null : linkId;
+    }
+
+    static String markerValue(long savedAt, @Nullable String postId) {
+        return postId == null
+                ? String.valueOf(savedAt)
+                : String.valueOf(savedAt) + POST_ID_SEPARATOR + postId;
+    }
+
+    /** The post id in a marker's value, or null when it holds only a save time. */
+    @Nullable
+    static String postIdIn(String value) {
+        int at = value.indexOf(POST_ID_SEPARATOR);
+        if (at < 0 || at + 1 >= value.length()) return null;
+        return value.substring(at + 1);
+    }
+
+    /** Promoted things, newest-saved first, each with its post id when it is a comment. */
+    public static ArrayList<ThingRef> getPromoted() {
+        ArrayList<ThingRef> ids = new ArrayList<>();
         try {
             Map<String, String> values = KVStore.getInstance().getByPrefix(PROMOTED_PREFIX);
             List<Map.Entry<String, String>> entries = new ArrayList<>(values.entrySet());
@@ -97,7 +131,10 @@ public class LocalSaved {
                 // getByPrefix uses SQL LIKE, where '_' is a wildcard, so "localsaved_%" also
                 // matches "localsavedpending_..." -- keep only literal-prefix matches.
                 if (!e.getKey().startsWith(PROMOTED_PREFIX)) continue;
-                ids.add(e.getKey().substring(PROMOTED_PREFIX.length()));
+                ids.add(
+                        new ThingRef(
+                                e.getKey().substring(PROMOTED_PREFIX.length()),
+                                postIdIn(e.getValue())));
             }
         } catch (Exception e) {
             LogUtil.e(e, "LocalSaved.getPromoted failed");
@@ -107,7 +144,8 @@ public class LocalSaved {
 
     private static long parseTimestamp(String v) {
         try {
-            return Long.parseLong(v);
+            int at = v.indexOf(POST_ID_SEPARATOR);
+            return Long.parseLong(at < 0 ? v : v.substring(0, at));
         } catch (Exception e) {
             return 0L;
         }

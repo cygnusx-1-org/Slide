@@ -7,17 +7,20 @@ import com.lusfold.androidkeyvaluestore.KVStore;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.ContributionCache;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.RedditLookups;
+import me.edgan.redditslide.util.ThingRef;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thing;
-import net.dean.jraw.paginators.FullnamesPaginator;
 
 /** Created by ccrama on 9/17/2015. */
 public class HistoryPosts extends GeneralPosts {
@@ -45,9 +48,8 @@ public class HistoryPosts extends GeneralPosts {
 
     /**
      * The fullname of the last restored row, and so the point the id list has to be resumed after.
-     * History has no {@code after} cursor: {@link FullnamesPaginator} walks a fixed array of ids
-     * built from local storage, and where it had got to is expressible only as a position in that
-     * array.
+     * History has no {@code after} cursor: it walks a fixed list of ids built from local storage,
+     * and where it had got to is expressible only as a position in that list.
      */
     @Nullable private String resumeAfterFullname;
 
@@ -109,8 +111,20 @@ public class HistoryPosts extends GeneralPosts {
         return cached.posts;
     }
 
-    @SuppressWarnings("NullAway.Init") // assigned in onPostExecute
-    FullnamesPaginator paginator;
+    /** Ids per page: one {@code /api/info} request's worth, or that many single fetches. */
+    static final int PAGE_SIZE = 25;
+
+    /**
+     * Another kind of row in the same store under a key with an underscore in it, Last Comments'
+     * {@code comments<fullname>} or Local Saved's markers, is not a fullname and is left out.
+     */
+    private static final Pattern FULLNAME = Pattern.compile("t[1-6]_[0-9a-z]+");
+
+    /** Every id the history walks, newest first. Null until the first load builds it. */
+    @Nullable private List<String> historyIds;
+
+    /** Where in {@link #historyIds} the next page starts. */
+    private int nextIndex;
 
     public class LoadData extends AsyncTask<String, Void, ArrayList<Contribution>> {
         final boolean reset;
@@ -200,7 +214,7 @@ public class HistoryPosts extends GeneralPosts {
             }
             ArrayList<Contribution> newData = new ArrayList<>();
             try {
-                if (reset || paginator == null) {
+                if (reset || historyIds == null) {
                     ArrayList<String> ids = new ArrayList<>();
                     HashMap<Long, String> idsSorted = new HashMap<>();
                     Map<String, String> values;
@@ -212,10 +226,16 @@ public class HistoryPosts extends GeneralPosts {
 
                     for (Map.Entry<String, String> entry : values.entrySet()) {
                         Object done;
-                        if (entry.getValue().equals("true") || entry.getValue().equals("false")) {
-                            done = Boolean.valueOf(entry.getValue());
-                        } else {
-                            done = Long.valueOf(entry.getValue());
+                        try {
+                            if (entry.getValue().equals("true")
+                                    || entry.getValue().equals("false")) {
+                                done = Boolean.valueOf(entry.getValue());
+                            } else {
+                                done = Long.valueOf(entry.getValue());
+                            }
+                        } catch (NumberFormatException e) {
+                            // Not a read post: a Local Saved comment keeps its post id here.
+                            continue;
                         }
                         if (prefix.isEmpty()) {
                             if (!entry.getKey().contains("readLater")) {
@@ -223,7 +243,12 @@ public class HistoryPosts extends GeneralPosts {
                                     ids.add("t3_" + entry.getKey());
                                 } else if (done instanceof Long) {
                                     if (entry.getKey().contains("_")) {
-                                        idsSorted.put((Long) done, entry.getKey());
+                                        // /api/info quietly ignored these. Now that an empty
+                                        // page no longer ends the history, a tail of them would
+                                        // cost a request per page of them.
+                                        if (FULLNAME.matcher(entry.getKey()).matches()) {
+                                            idsSorted.put((Long) done, entry.getKey());
+                                        }
                                     } else {
                                         idsSorted.put((Long) done, "t3_" + entry.getKey());
                                     }
@@ -260,22 +285,33 @@ public class HistoryPosts extends GeneralPosts {
                         // an offset into a list that is no longer the one that was recorded.
                     }
 
-                    paginator =
-                            new FullnamesPaginator(
-                                    Authentication.reddit, ids.toArray(new String[ids.size() - 1]));
+                    historyIds = ids;
+                    nextIndex = 0;
                 }
 
-                if (!paginator.hasNext()) {
-                    nomore = true;
-                    return new ArrayList<>();
-                }
-
-                for (Thing c : paginator.next()) {
-                    if (c instanceof Contribution) {
-                        newData.add((Contribution) c);
+                // Ends when the ids run out, never because a page came back empty: a post that is
+                // gone, private or banned is missing from its page, and a page of nothing else
+                // must not hide every row after it.
+                final List<String> all = historyIds;
+                while (nextIndex < all.size()) {
+                    final int end = Math.min(nextIndex + PAGE_SIZE, all.size());
+                    final ArrayList<ThingRef> page = new ArrayList<>();
+                    for (String id : all.subList(nextIndex, end)) {
+                        page.add(new ThingRef(id, null));
+                    }
+                    for (Thing c : RedditLookups.things(page)) {
+                        if (c instanceof Contribution) {
+                            newData.add((Contribution) c);
+                        }
+                    }
+                    // Only past a page that loaded, so a failed one is asked again.
+                    nextIndex = end;
+                    if (!newData.isEmpty()) {
+                        return newData;
                     }
                 }
 
+                nomore = true;
                 return newData;
             } catch (Exception e) {
                 LogUtil.e(e, "HistoryPosts.doInBackground failed");

@@ -51,7 +51,9 @@ import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.OnSingleClickListener;
+import me.edgan.redditslide.util.RedditLookups;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.ThingRef;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.ApiException;
 import net.dean.jraw.managers.AccountManager;
@@ -771,7 +773,10 @@ public class ModeratorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     new ModerationManager(Authentication.reddit).remove(comment, false);
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(
-                                    Authentication.reddit.get(comment.getFullName()).get(0),
+                                    RedditLookups.thing(
+                                            new ThingRef(
+                                                    MiscUtil.orEmpty(comment.getFullName()),
+                                                    comment.getSubmissionId())),
                                     DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
                     LogUtil.e(e, "ModeratorAdapter.doInBackground failed");

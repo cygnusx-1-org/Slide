@@ -74,7 +74,7 @@ public class SubmissionComments {
     public boolean online = true;
     int contextNumber = 5;
     private final MoreCommentsSession moreCommentsSession =
-            new MoreCommentsSession(SettingValues.useOldLoadMoreComments);
+            new MoreCommentsSession(SettingValues.useOldApiInfo());
 
     /**
      * A thread that is already in hand, rather than one to be fetched.

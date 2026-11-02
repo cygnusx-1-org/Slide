@@ -358,7 +358,9 @@ public class SubmissionModActions {
                     new ModerationManager(Authentication.reddit).remove(submission, false);
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(
-                                    Authentication.reddit.get("t1_" + toDistinguish).get(0),
+                                    RedditLookups.thing(
+                                            new ThingRef(
+                                                    "t1_" + toDistinguish, submission.getId())),
                                     DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
                     LogUtil.e(e, "SubmissionModActions.doInBackground failed");

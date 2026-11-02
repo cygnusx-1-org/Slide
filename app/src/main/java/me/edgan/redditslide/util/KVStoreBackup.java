@@ -18,8 +18,9 @@ import org.jspecify.annotations.NullMarked;
  *
  * <p>The serialized form is {@code key\tvalue} lines. It deliberately contains neither the
  * {@code <START} / {@code END>} markers the backup file uses as delimiters nor tabs/newlines in
- * any key or value (keys are fixed prefixes + Reddit fullnames, values are timestamps), so it can
- * be embedded as a single backup entry without escaping.
+ * any key or value (keys are fixed prefixes + Reddit fullnames, values are timestamps, a Local
+ * Saved comment's followed by {@code :} and its post id), so it can be embedded as a single backup
+ * entry without escaping.
  */
 @NullMarked
 public class KVStoreBackup {

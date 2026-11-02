@@ -40,7 +40,9 @@ import me.edgan.redditslide.Visuals.Palette;
 import me.edgan.redditslide.util.CompatUtil;
 import me.edgan.redditslide.util.LogUtil;
 import me.edgan.redditslide.util.MiscUtil;
+import me.edgan.redditslide.util.RedditLookups;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.ThingRef;
 import me.edgan.redditslide.util.TimeUtils;
 import net.dean.jraw.models.Account;
 import net.dean.jraw.models.Comment;
@@ -117,7 +119,7 @@ public class RedditItemView extends RelativeLayout {
                         String end = parts.get(5);
 
                         if (end.length() >= 3) {
-                            new AsyncLoadComment(end)
+                            new AsyncLoadComment(end, submission)
                                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         } else {
                             new AsyncLoadSubmission(submission)
@@ -319,9 +321,11 @@ public class RedditItemView extends RelativeLayout {
     public class AsyncLoadComment extends AsyncTask<Void, Void, Comment> {
 
         String id;
+        String postId;
 
-        public AsyncLoadComment(String commentId) {
+        public AsyncLoadComment(String commentId, String postId) {
             this.id = commentId;
+            this.postId = postId;
         }
 
         @Override
@@ -330,7 +334,7 @@ public class RedditItemView extends RelativeLayout {
                 if (Authentication.reddit == null) {
                     return null;
                 }
-                return (Comment) Authentication.reddit.get("t1_" + id).get(0);
+                return (Comment) RedditLookups.thing(new ThingRef("t1_" + id, postId));
             } catch (Exception e) {
                 return null;
             }

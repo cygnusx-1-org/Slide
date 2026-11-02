@@ -4,21 +4,25 @@ import android.os.AsyncTask;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
+import java.util.List;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.ContributionCache;
 import me.edgan.redditslide.PostMatch;
 import me.edgan.redditslide.SettingValues;
 import me.edgan.redditslide.SubmissionViews.LocalSaved;
 import me.edgan.redditslide.util.LogUtil;
+import me.edgan.redditslide.util.RedditLookups;
+import me.edgan.redditslide.util.ThingRef;
 import net.dean.jraw.models.Contribution;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.Thing;
-import net.dean.jraw.paginators.FullnamesPaginator;
 
 /**
  * Feed source for the Local Saved viewer. On a reset/refresh it runs {@link LocalSaved#reconcile()}
- * (detect saves Reddit has dropped) and then loads the promoted fullnames via {@code /api/info}
- * ({@link FullnamesPaginator}). Items removed by a moderator render as whatever Reddit now returns.
+ * (detect saves Reddit has dropped) and then loads the promoted things through {@link
+ * RedditLookups}. Items removed by a moderator render as whatever Reddit now returns. A comment
+ * saved before its post id was kept cannot be fetched on its own, so it is left out unless {@code
+ * /api/info} answers for it.
  */
 public class LocalSavedPosts extends GeneralPosts {
     @SuppressWarnings("NullAway.Init") // bound by bindAdapter before any load
@@ -27,6 +31,8 @@ public class LocalSavedPosts extends GeneralPosts {
     @SuppressWarnings("NullAway.Init") // assigned in bindAdapter
     private ContributionAdapter adapter;
     public boolean loading;
+
+    private static final int BATCH_SIZE = 100;
 
     /**
      * How much of a hibernated listing has to still be on disk for it to stand in for a fetch. See
@@ -111,16 +117,14 @@ public class LocalSavedPosts extends GeneralPosts {
                     LocalSaved.reconcile();
                 }
 
-                ArrayList<String> ids = LocalSaved.getPromoted();
+                ArrayList<ThingRef> ids = LocalSaved.getPromoted();
                 ArrayList<Contribution> newData = new ArrayList<>();
 
                 if (!ids.isEmpty() && Authentication.reddit != null) {
-                    FullnamesPaginator paginator =
-                            new FullnamesPaginator(
-                                    Authentication.reddit, ids.toArray(new String[0]));
-                    paginator.setLimit(100);
-                    while (paginator.hasNext()) {
-                        for (Thing t : paginator.next()) {
+                    // /api/info's limit, which also bounds a page of single fetches.
+                    for (int i = 0; i < ids.size(); i += BATCH_SIZE) {
+                        List<ThingRef> batch = ids.subList(i, Math.min(i + BATCH_SIZE, ids.size()));
+                        for (Thing t : RedditLookups.things(batch)) {
                             if (t instanceof Contribution) {
                                 newData.add((Contribution) t);
                             }

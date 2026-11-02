@@ -160,7 +160,9 @@ public class SettingValues {
     public static final String PREF_DIALOG_COLORED_BORDER = "dialogColoredBorder";
 
     public static final String PREF_COLLAPSE_BLOCKED_USERS = "collapseBlockedUsers";
+    /** The retired Comments-screen switch, read only to fold it into PREF_USE_OLD_API_INFO. */
     public static final String PREF_USE_OLD_LOAD_MORE_COMMENTS = "useOldLoadMoreComments";
+    public static final String PREF_USE_OLD_API_INFO = "useOldApiInfo";
 
     public static String imageSaveLocation = "";
     public static String redditClientIdOverride = "";
@@ -372,7 +374,6 @@ public class SettingValues {
     public static boolean subredditFiltersTillRestart;
     public static boolean subredditFilterPrefixMatching;
     public static boolean collapseBlockedUsers;
-    public static boolean useOldLoadMoreComments;
     public static boolean filterOldPosts;
     public static int filterOldPostsDays;
     public static boolean dialogColoredBorder;
@@ -380,6 +381,7 @@ public class SettingValues {
 
     public static void setAllValues(SharedPreferences settings) {
         prefs = settings;
+        migrateOldLoadMoreComments(settings);
 
         imageSaveLocation = PrefUtil.getString(prefs, PREF_IMAGE_SAVE_LOCATION, "");
         redditClientIdOverride =
@@ -613,7 +615,6 @@ public class SettingValues {
         subredditFiltersTillRestart = prefs.getBoolean(PREF_SUBREDDIT_FILTERS_TILL_RESTART, true);
         subredditFilterPrefixMatching = prefs.getBoolean(PREF_SUBREDDIT_FILTER_PREFIX_MATCHING, false);
         collapseBlockedUsers = prefs.getBoolean(PREF_COLLAPSE_BLOCKED_USERS, false);
-        useOldLoadMoreComments = prefs.getBoolean(PREF_USE_OLD_LOAD_MORE_COMMENTS, false);
         filterOldPosts = prefs.getBoolean(PREF_FILTER_OLD_POSTS, false);
         filterOldPostsDays = prefs.getInt(PREF_FILTER_OLD_POSTS_DAYS, 30);
         dialogColoredBorder = prefs.getBoolean(PREF_DIALOG_COLORED_BORDER, false);
@@ -671,6 +672,41 @@ public class SettingValues {
      *
      * @return true if the app should record and restore where the user left off.
      */
+    /**
+     * Whether lookups by id, Load More Comments and the random subreddit check use Reddit's
+     * single-request endpoints, {@code /api/info} and {@code /api/morechildren}, which Reddit blocks
+     * for some client ids, rather than fetching each thing on its own.
+     *
+     * <p>Only while Enable Overrides is on, the switch that greys this one out: a stored "on" that
+     * nobody can reach to turn off would otherwise keep applying. Read at the moment of use, so it
+     * needs no restart; false until {@link #setAllValues} has run.
+     */
+    public static boolean useOldApiInfo() {
+        final SharedPreferences settings = prefs;
+        return settings != null
+                && Constants.overridesEnabled()
+                && settings.getBoolean(PREF_USE_OLD_API_INFO, false);
+    }
+
+    /**
+     * Folds the retired "Use Old Load More Comments Method" switch into {@link
+     * #PREF_USE_OLD_API_INFO}, which now chooses the Load More Comments method too.
+     *
+     * <p>Runs on every start, so restoring an old backup converts as well. An old "on" turns the
+     * new setting on; an old "off" never turns it off. The new value is committed before the old
+     * key goes, so a failed write leaves the old key to try again next start.
+     */
+    static void migrateOldLoadMoreComments(SharedPreferences settings) {
+        if (!settings.contains(PREF_USE_OLD_LOAD_MORE_COMMENTS)) {
+            return;
+        }
+        if (settings.getBoolean(PREF_USE_OLD_LOAD_MORE_COMMENTS, false)
+                && !settings.edit().putBoolean(PREF_USE_OLD_API_INFO, true).commit()) {
+            return;
+        }
+        settings.edit().remove(PREF_USE_OLD_LOAD_MORE_COMMENTS).commit();
+    }
+
     public static boolean hibernateActive() {
         return hibernate && hibernateResume;
     }

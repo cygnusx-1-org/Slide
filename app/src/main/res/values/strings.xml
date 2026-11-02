@@ -778,8 +778,6 @@
     <string name="settings_comments_collapse_sticky">Always fully collapse the sticky comment</string>
     <string name="settings_comments_collapse_blocked_users">Collapse comments from blocked users</string>
     <string name="settings_comments_collapse_blocked_users_description">Enables Fully collapse comments</string>
-    <string name="settings_comments_old_load_more">Use Old Load More Comments Method</string>
-    <string name="settings_comments_old_load_more_description">Uses far fewer requests, but Load More Comments fails if Reddit blocks it for you</string>
     <string name="settings_backup_occurs">Backup will occur at %1$s</string>
     <string name="settings_backup_none">No subreddits will back up</string>
     <string name="settings_backup_will_backup">\u0020will back up</string>
@@ -1429,6 +1427,8 @@
     <string name="click_custom_user_agent">Click to set custom user agent</string>
     <string name="settings_enable_overrides">Enable Overrides</string>
     <string name="settings_enable_overrides_desc">Use your custom client ID, redirect URI, and user agent instead of the app defaults. Leave off unless you know you need it.</string>
+    <string name="settings_use_old_api_info">Use /api/info the Old Way</string>
+    <string name="settings_use_old_api_info_desc">Uses far fewer requests, but Load More Comments, History, Local Saved and random subreddits fail if Reddit blocks it for you</string>
 
     <string name="settings_section_sound">Sound</string>
     <string name="settings_unmute_default">Unmute videos by default</string>

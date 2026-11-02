@@ -22,20 +22,15 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.res.XmlResourceParser;
 import android.os.Looper;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ApplicationProvider;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import me.edgan.redditslide.Adapters.CommentAdapter;
 import me.edgan.redditslide.Adapters.CommentItem;
 import me.edgan.redditslide.Adapters.CommentObject;
@@ -44,7 +39,6 @@ import me.edgan.redditslide.Adapters.MoreCommentViewHolder;
 import me.edgan.redditslide.Adapters.SubmissionComments;
 import me.edgan.redditslide.Authentication;
 import me.edgan.redditslide.R;
-import me.edgan.redditslide.SettingValues;
 import net.dean.jraw.RedditClient;
 import net.dean.jraw.models.CommentNode;
 import net.dean.jraw.models.CommentSort;
@@ -56,7 +50,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDialog;
-import org.xmlpull.v1.XmlPullParser;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 33, application = Application.class)
@@ -405,44 +398,5 @@ public class AsyncLoadMoreTaskTest {
             Authentication.reddit = clientWas;
         }
         assertTrue(requests.isEmpty());
-    }
-
-    @Test
-    public void theOptionIsOffByDefaultAndOnTheCommentSettingsScreen() throws Exception {
-        android.content.Context context = ApplicationProvider.getApplicationContext();
-        android.content.SharedPreferences prefs =
-                context.getSharedPreferences("MoreCommentsTest", 0);
-        // setAllValues rewrites every setting, and the sandbox outlives this class, so all of them
-        // go back afterwards or later tests would run under these defaults.
-        Map<Field, Object> settingsWere = new HashMap<>();
-        for (Field field : SettingValues.class.getDeclaredFields()) {
-            if (Modifier.isStatic(field.getModifiers()) && !Modifier.isFinal(field.getModifiers())) {
-                field.setAccessible(true);
-                settingsWere.put(field, field.get(null));
-            }
-        }
-        try {
-            SettingValues.setAllValues(prefs);
-            assertFalse(SettingValues.useOldLoadMoreComments);
-        } finally {
-            for (Map.Entry<Field, Object> setting : settingsWere.entrySet()) {
-                setting.getKey().set(null, setting.getValue());
-            }
-        }
-
-        String wanted = "@" + R.id.settings_comments_useOldLoadMoreComments;
-        boolean found = false;
-        try (XmlResourceParser parser =
-                context.getResources().getLayout(R.layout.activity_settings_comments_child)) {
-            while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                if (parser.getEventType() == XmlPullParser.START_TAG
-                        && wanted.equals(
-                                parser.getAttributeValue(
-                                        "http://schemas.android.com/apk/res/android", "id"))) {
-                    found = true;
-                }
-            }
-        }
-        assertTrue(found);
     }
 }

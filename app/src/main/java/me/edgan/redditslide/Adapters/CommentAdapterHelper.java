@@ -85,8 +85,10 @@ import me.edgan.redditslide.util.MaterialInputDialog;
 import me.edgan.redditslide.util.MaterialProgressDialog;
 import me.edgan.redditslide.util.MiscUtil;
 import me.edgan.redditslide.util.ReadAloudUtil;
+import me.edgan.redditslide.util.RedditLookups;
 import me.edgan.redditslide.util.SavedTagDialogs;
 import me.edgan.redditslide.util.SubmissionParser;
+import me.edgan.redditslide.util.ThingRef;
 import me.edgan.redditslide.util.TimeUtils;
 import me.edgan.redditslide.util.TranslateUtil;
 import net.dean.jraw.ApiException;
@@ -1419,7 +1421,10 @@ final AlertDialog reportDialog =
                     new ModerationManager(Authentication.reddit).remove(comment, false);
                     new ModerationManager(Authentication.reddit)
                             .setDistinguishedStatus(
-                                    Authentication.reddit.get(comment.getFullName()).get(0),
+                                    RedditLookups.thing(
+                                            new ThingRef(
+                                                    MiscUtil.orEmpty(comment.getFullName()),
+                                                    comment.getSubmissionId())),
                                     DistinguishedStatus.MODERATOR);
                 } catch (ApiException | RuntimeException e) {
                     LogUtil.e(e, "CommentAdapterHelper.doInBackground failed");
