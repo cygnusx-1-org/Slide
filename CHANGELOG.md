@@ -4,6 +4,12 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.1.1 / 2026-11-2
+============
+* Fixed History, Local Saved, and random subreddits
+* Renamed `Settings > Comments > Use Old Load More Comments Method` to
+`Settings > General > Use /api/info the Old Way`
+
 8.1.0 / 2026-10-31
 ============
 * Load more comments fails with 403 "blocked by network security"
