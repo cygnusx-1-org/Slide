@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.1.2 / 2026-11-9
+============
+* Fixed Submitting an edit of a comment leads to a "Would you like to try again?" error #318
+
 8.1.1 / 2026-11-2
 ============
 * Fixed History, Local Saved, and random subreddits
