@@ -180,6 +180,7 @@
     <string name="comment_delete_msg">Opravdu chcete smazat tento komentář? To nelze vrátit zpět.</string>
     <string name="comment_delete_err">Ale ne, něco se pokazilo.</string>
     <string name="comment_delete_err_msg">Chcete to zkusit znovu?</string>
+    <string name="comment_edit_err">Úpravu se nepodařilo uložit</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">Zrušit uložení</string>
     <string name="comment_loading_more">Načítám další komentáře&#8230;</string>

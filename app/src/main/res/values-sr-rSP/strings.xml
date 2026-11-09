@@ -177,6 +177,7 @@
     <string name="comment_delete_msg">Да ли сигурно желите да избришете овај коментар? Ово се не може поништити.</string>
     <string name="comment_delete_err">Ух, нешто је пошло наопако.</string>
     <string name="comment_delete_err_msg">Желите ли да покушате поново?</string>
+    <string name="comment_edit_err">Измена није могла да се сачува</string>
     <string name="comment_deleted">[избрисано]</string>
     <string name="comment_unsave">Одсачувај</string>
     <string name="comment_loading_more">Учитавање још коментара&#8230;</string>

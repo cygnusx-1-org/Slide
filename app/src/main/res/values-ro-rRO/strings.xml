@@ -177,6 +177,7 @@
     <string name="comment_delete_msg">Ești sigur ca vrei sa ștergi comentariul acesta? Acțiunea aceasta nu poate fi anulată.</string>
     <string name="comment_delete_err">O! Ceva nu merge cum trebuie.</string>
     <string name="comment_delete_err_msg">Dorești să încerci din nou?</string>
+    <string name="comment_edit_err">Modificarea nu a putut fi salvată</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">Anulează salvarea</string>
     <string name="comment_loading_more">Se încarcă mai multe comentarii&#8230;</string>

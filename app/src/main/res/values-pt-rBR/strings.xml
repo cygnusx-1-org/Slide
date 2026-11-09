@@ -177,6 +177,7 @@
     <string name="comment_delete_msg">Deseja mesmo excluir este comentário? Isto não pode ser desfeito.</string>
     <string name="comment_delete_err">Opa, algo deu errado.</string>
     <string name="comment_delete_err_msg">Deseja tentar novamente?</string>
+    <string name="comment_edit_err">Não foi possível salvar sua edição</string>
     <string name="comment_deleted">[deletado]</string>
     <string name="comment_unsave">Não salvar</string>
     <string name="comment_loading_more">Carregando mais comentários&#8230;</string>

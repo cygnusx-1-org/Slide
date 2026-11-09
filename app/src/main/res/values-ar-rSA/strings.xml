@@ -186,6 +186,7 @@
     <string name="comment_delete_msg">هل تريد حذف هذا التعليق حقاً؟ وهذا لا يمكن التراجع عنه.</string>
     <string name="comment_delete_err">آه ، لقد حدث خطأ ما</string>
     <string name="comment_delete_err_msg">هل تود أن تجرب مجددا؟</string>
+    <string name="comment_edit_err">تعذّر حفظ تعديلك</string>
     <string name="comment_deleted">[محذوف]</string>
     <string name="comment_unsave">لم يحفظ</string>
     <string name="comment_loading_more">يحمل تعليقات...</string>

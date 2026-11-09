@@ -177,6 +177,7 @@
     <string name="comment_delete_msg">Esteu segur de voler esborrar el comentari? No es podrà desfer</string>
     <string name="comment_delete_err">Caram, quelcom ha fallat.</string>
     <string name="comment_delete_err_msg">Voleu tornar-ho a intentar?</string>
+    <string name="comment_edit_err">No s\'ha pogut desar la modificació</string>
     <string name="comment_deleted">[esborrat]</string>
     <string name="comment_unsave">Deixa de desar-ho</string>
     <string name="comment_loading_more">Carregant més comentaris&#8230;</string>

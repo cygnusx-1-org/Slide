@@ -171,6 +171,7 @@
     <string name="comment_delete_msg">Apakah anda benar-benar ingin menghapus komentar ini? Ini tidak bisa dibatalkan</string>
     <string name="comment_delete_err">Uh oh, ada sesuatu yang tidak beres.</string>
     <string name="comment_delete_err_msg">Apakah anda ingin mencobanya lagi?</string>
+    <string name="comment_edit_err">Suntingan anda tidak dapat disimpan</string>
     <string name="comment_deleted">[dihapus]</string>
     <string name="comment_unsave">Batal simpan</string>
     <string name="comment_loading_more">Memuat komentar lainnya&#8230;</string>

@@ -174,6 +174,7 @@
     <string name="comment_delete_msg">Slette denne kommentaren? Handlingen kan ikke angres.</string>
     <string name="comment_delete_err">Uff da, noe gikk galt.</string>
     <string name="comment_delete_err_msg">Ønsker du å prøve igjen?</string>
+    <string name="comment_edit_err">Endringen din kunne ikke lagres</string>
     <string name="comment_deleted">[slettet]</string>
     <string name="comment_unsave">Angre lagring</string>
     <string name="comment_loading_more">Laster inn flere kommentarer&#8230;</string>

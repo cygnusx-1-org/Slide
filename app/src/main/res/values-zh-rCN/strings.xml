@@ -171,6 +171,7 @@
     <string name="comment_delete_msg">你真的想删除此评论？此操作不可撤消。</string>
     <string name="comment_delete_err">噢，出问题了。</string>
     <string name="comment_delete_err_msg">您想再试一次吗？</string>
+    <string name="comment_edit_err">无法保存您的编辑</string>
     <string name="comment_deleted">[deleted]</string>
     <string name="comment_unsave">取消保存</string>
     <string name="comment_loading_more">正在加载更多评论&#8230;</string>

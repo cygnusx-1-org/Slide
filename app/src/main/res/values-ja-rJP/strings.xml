@@ -171,6 +171,7 @@
     <string name="comment_delete_msg">このコメントを削除してもよろしいですか? この操作は元に戻すことができません。</string>
     <string name="comment_delete_err">何か問題があります。</string>
     <string name="comment_delete_err_msg">もう一度試しますか?</string>
+    <string name="comment_edit_err">編集を保存できませんでした</string>
     <string name="comment_deleted">[削除済]</string>
     <string name="comment_unsave">未保存</string>
     <string name="comment_loading_more">追加のコメントを読み込んでいます&#8230;</string>

@@ -27,8 +27,13 @@ public class TimeUtils {
         }
 
         long now = System.currentTimeMillis();
-        if (time > now || time <= 0) {
+        if (time <= 0) {
             return null;
+        }
+        // Ahead of this device's clock: Reddit stamped it moments ago and the clocks disagree, which
+        // is routine right after an edit.
+        if (time > now) {
+            return c.getString(R.string.time_just_now);
         }
 
         final long diff = now - time;

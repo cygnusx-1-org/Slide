@@ -177,6 +177,7 @@
     <string name="comment_delete_msg">Voulez-vous vraiment supprimer ce commentaire ? Cela ne peut pas être annulée.</string>
     <string name="comment_delete_err">Oh oh, quelque chose a mal tourné</string>
     <string name="comment_delete_err_msg">Voulez-vous réessayer ?</string>
+    <string name="comment_edit_err">Votre modification n\'a pas pu être enregistrée</string>
     <string name="comment_deleted">[supprimé]</string>
     <string name="comment_unsave">Désenregistrer</string>
     <string name="comment_loading_more">Chargement de plus de commentaires&#8230;</string>

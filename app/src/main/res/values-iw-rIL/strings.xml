@@ -177,6 +177,7 @@
     <string name="comment_delete_msg">האם באמת ברצונך למחוק את התגובה הזו? לא ניתן לבטל פעולה זו</string>
     <string name="comment_delete_err">אופס, משהו השתבש</string>
     <string name="comment_delete_err_msg">האם תרצו לנסות שוב?</string>
+    <string name="comment_edit_err">לא ניתן היה לשמור את העריכה</string>
     <string name="comment_deleted">[נמחק]</string>
     <string name="comment_unsave">ביטול השמירה</string>
     <string name="comment_loading_more">טוען תגובות נוספות…</string>

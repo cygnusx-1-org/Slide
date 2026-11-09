@@ -2298,7 +2298,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public void editComment(final CommentNode n, final CommentViewHolder holder) {
+    public void editComment(@Nullable final CommentNode n, final CommentViewHolder holder) {
         // Called from AsyncEditTask.doInBackground; hop to the UI thread before touching the shared
         // comment list, the RecyclerView, or the holder's position.
         ((Activity) mContext)

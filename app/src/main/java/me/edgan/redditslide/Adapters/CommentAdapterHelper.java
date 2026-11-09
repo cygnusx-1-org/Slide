@@ -102,6 +102,7 @@ import net.dean.jraw.models.PublicContribution;
 import net.dean.jraw.models.Ruleset;
 import net.dean.jraw.models.Submission;
 import net.dean.jraw.models.SubredditRule;
+import net.dean.jraw.models.Thing;
 import net.dean.jraw.models.VoteDirection;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -1995,13 +1996,11 @@ final AlertDialog reportDialog =
 
         @Override
         protected Void doInBackground(Void... params) {
+            final Thing edited;
             try {
-                new AccountManager(Authentication.reddit)
-                        .updateContribution(baseNode.getComment(), text);
-                adapter.currentSelectedItem = MiscUtil.orEmpty(baseNode.getComment().getFullName());
-                CommentNode n = baseNode.notifyCommentChanged(Authentication.reddit);
-                adapter.editComment(n, holder);
-                dialog.dismiss();
+                edited =
+                        new AccountManager(Authentication.reddit)
+                                .updateContribution(baseNode.getComment(), text);
             } catch (Exception e) {
                 LogUtil.e(e, "CommentAdapterHelper.doInBackground failed");
                 ((Activity) mContext)
@@ -2010,7 +2009,7 @@ final AlertDialog reportDialog =
                                     @Override
                                     public void run() {
                                         DialogUtil.showWithCardBackground(new AlertDialog.Builder(mContext)
-                                                .setTitle(R.string.comment_delete_err)
+                                                .setTitle(R.string.comment_edit_err)
                                                 .setMessage(R.string.comment_delete_err_msg)
                                                 .setPositiveButton(
                                                         R.string.btn_yes,
@@ -2032,7 +2031,22 @@ final AlertDialog reportDialog =
                                                 );
                                     }
                                 });
+                return null;
             }
+
+            // The edit is on Reddit now, so nothing past here may offer to make it again.
+            dialog.dismiss();
+            adapter.currentSelectedItem = MiscUtil.orEmpty(baseNode.getComment().getFullName());
+            CommentNode n = null;
+            if (edited instanceof Comment) {
+                try {
+                    n = baseNode.notifyCommentChanged((Comment) edited);
+                } catch (IllegalArgumentException e) {
+                    LogUtil.e(e, "CommentAdapterHelper.doInBackground failed");
+                }
+            }
+            // A null node reloads the thread, which shows the edit as well.
+            adapter.editComment(n, holder);
             return null;
         }
     }

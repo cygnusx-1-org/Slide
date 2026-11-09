@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Test;
@@ -241,8 +244,41 @@ public class MoreCommentsLoaderTest {
 
         assertEquals(all.subList(0, 10), idsOf(result));
         assertEquals(all.subList(10, 30), result.getRemainingIds());
-        // In-flight requests may finish, but no more start after the failure.
-        assertTrue("sent " + requests.size(), requests.size() <= 10 + 1 + 3);
+    }
+
+    @Test
+    public void noRequestStartsAfterTheInFlightOnesHaveFailed() {
+        List<String> all = ids("t", 30);
+        // t10 and the requests started alongside it wait for each other, so every worker is held
+        // in one of them and none can claim another id before its own failure stops it. A count
+        // of what was sent after a lone failure can't be pinned: a fetch that returns at once
+        // lets the other workers claim ids before the failing one has recorded its failure.
+        List<String> inFlight =
+                all.subList(10, 10 + MoreCommentsLoaderKt.MORE_COMMENTS_MAX_IN_FLIGHT);
+        CyclicBarrier together = new CyclicBarrier(inFlight.size());
+        FocusedListingFetcher fetcher =
+                (id, limit) -> {
+                    requests.add(id);
+                    if (!inFlight.contains(id)) {
+                        return ok(listing(comment(id)));
+                    }
+                    // A timeout rather than a hang if fewer workers than this ever run at once.
+                    together.await(10, TimeUnit.SECONDS);
+                    return BLOCKED;
+                };
+
+        MoreCommentsResult result = new MoreCommentsLoader(session, fetcher).loadTopLevel(all);
+
+        assertEquals(all.subList(0, 10), idsOf(result));
+        assertEquals(all.subList(10, 30), result.getRemainingIds());
+        assertEquals(all.subList(0, 10 + inFlight.size()), sorted(requests));
+    }
+
+    /** {@link #requests} in id order, since concurrent requests are recorded in any order. */
+    private static List<String> sorted(List<String> sent) {
+        List<String> out = new ArrayList<>(sent);
+        out.sort(Comparator.comparingInt(id -> Integer.parseInt(id.substring(1))));
+        return out;
     }
 
     @Test
