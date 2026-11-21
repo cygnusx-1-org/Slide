@@ -4,6 +4,10 @@ The old changelog can be read in the [CHANGELOG.md](https://github.com/Haptic-Ap
 
 ---
 
+8.1.3 / 2026-11-21
+=============
+* Added a baseline profile for better performance
+
 8.1.2 / 2026-11-9
 ============
 * Fixed Submitting an edit of a comment leads to a "Would you like to try again?" error #318
