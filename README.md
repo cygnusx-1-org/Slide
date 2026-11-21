@@ -27,17 +27,10 @@ Android. It is based around the
 <hr style="display: inline-block; width: 100%; border: 1px dotted #ff00cc;">
 
 # Installation
-The easiest way to install Slide or get updates for Slide, outside the
-[Google Play Store](https://play.google.com/store/apps/details?id=me.edgan.redditslide&hl=en_US),
+The easiest way to install Slide or get updates for Slide
 is [Discoverium](https://github.com/cygnusx-1-org/Discoverium/). It has a search
 function, and lets you add apps to the list for keeping the apps updated.
 <p align="left">
-    <a href="https://play.google.com/store/apps/details?id=me.edgan.redditslide">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="assets/badges/googleplaystore.png" height="68">
-        <img alt="Get it on the Google Play Store" src="assets/badges/googleplaystore.png" height="68">
-      </picture>
-    </a>
     <a href="https://github.com/cygnusx-1-org/Discoverium/releases/latest">
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset="assets/badges/discoverium.png" height="60">
