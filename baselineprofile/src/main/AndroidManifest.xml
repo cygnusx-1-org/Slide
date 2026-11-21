@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- The test APK drives the app from outside its process, so it has to be able to see and
+         start another package. -->
+    <queries>
+        <package android:name="me.edgan.redditslide.benchmark"/>
+    </queries>
+
+</manifest>

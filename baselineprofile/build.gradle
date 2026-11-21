@@ -1,0 +1,104 @@
+plugins {
+    id 'com.android.test'
+    // BaselineProfileRule and MacrobenchmarkRule take receiver lambdas with default arguments,
+    // which are painful from Java. AGP 9's built-in Kotlin is already on the buildscript classpath
+    // for :app.
+    id 'com.android.built-in-kotlin'
+}
+
+// Generates the baseline profile :app ships in assets/dexopt/baseline.prof.
+//
+// Regenerate before a release, on an API 33+ device or emulator (no root needed there):
+//
+//   ./gradlew :baselineprofile:connectedBenchmarkAndroidTest \
+//       -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile
+//   ./gradlew :baselineprofile:copyBaselineProfile
+//
+// as two separate invocations (Gradle rejects the copy and an :app build in one), then review and
+// commit app/src/main/baselineProfiles/baseline-prof.txt. With more than one device attached, pin
+// one with ANDROID_SERIAL. The live feed never settles into a stable profile, so collection runs
+// all 15 iterations: about 20 minutes on the Pixel_9_Pro AVD.
+//
+// To check the profile still pays for itself, run StartupBenchmark instead (enabledRules=Macrobenchmark,
+// plus androidx.benchmark.suppressErrors=EMULATOR on an emulator) and compare startupNoCompilation
+// against startupBaselineProfile.
+android {
+    compileSdk 37
+    namespace = "me.edgan.redditslide.baselineprofile"
+
+    defaultConfig {
+        minSdk 29
+        targetSdk 36
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // :app has a "variant" flavor dimension and this module has none, so AGP has to be told
+        // which flavor to drive. The profile lands in app/src/main and so covers noGPlay too: the
+        // flavors differ only in the Google Drive backup classes, and entries for classes absent
+        // from an APK are ignored when the profile is compiled.
+        missingDimensionStrategy 'variant', 'withGPlay'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        // Pairs with :app's `benchmark` build type, the only target a profile can be generated
+        // from. com.android.test has no default signing config for a custom build type, and an
+        // unsigned test APK fails to install with INSTALL_PARSE_FAILED_NO_CERTIFICATES.
+        benchmark {
+            debuggable true
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+        }
+    }
+
+    targetProjectPath = ":app"
+    // Macrobenchmark kills and restarts the target app, so the test APK has to run in its own
+    // process rather than inside the app under test.
+    experimentalProperties["android.experimental.self-instrumenting"] = true
+}
+
+androidComponents {
+    // debug and release would target :app's debuggable debug build and its keystore-signed release
+    // build, neither of which can produce a profile. Only `benchmark` is meant to run.
+    beforeVariants(selector().all()) { variant ->
+        variant.enable = variant.buildType == 'benchmark'
+    }
+}
+
+dependencies {
+    implementation 'androidx.benchmark:benchmark-macro-junit4:1.5.0'
+    implementation 'androidx.test.uiautomator:uiautomator:2.4.1'
+    implementation 'androidx.test.ext:junit:1.3.0'
+    implementation 'junit:junit:4.13.2'
+}
+
+// Copies the profile the last connectedBenchmarkAndroidTest run pulled off the device into :app.
+// AGP reads src/main/baselineProfiles and compiles it into every non-debuggable APK.
+tasks.register('copyBaselineProfile', Copy) {
+    group = 'baseline profile'
+    description = 'Copy the generated baseline profile into app/src/main/baselineProfiles.'
+
+    def generated = fileTree(
+            layout.buildDirectory.dir('outputs/connected_android_test_additional_output/benchmark')) {
+        include '**/BaselineProfileGenerator_generate-baseline-prof.txt'
+    }
+    from(generated)
+    into rootProject.file('app/src/main/baselineProfiles')
+    rename { 'baseline-prof.txt' }
+    // The device subdirectory is not wanted in app/src.
+    eachFile { it.path = it.name }
+    includeEmptyDirs = false
+
+    doFirst {
+        def found = generated.files
+        if (found.size() != 1) {
+            throw new GradleException(
+                    "Expected exactly one generated baseline profile, found ${found.size()}" +
+                    (found ? ":\n  " + found.join('\n  ') : '.') +
+                    "\nRun connectedBenchmarkAndroidTest against a single device first.")
+        }
+    }
+}

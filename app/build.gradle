@@ -94,6 +94,23 @@ android {
             applicationIdSuffix ".debug"
             resValue "string", "app_name", "Slide Debug"
         }
+        // Target for the :baselineprofile module. Release-like, because ART only records and
+        // honours profiles for non-debuggable code, but signed with the debug key so it installs
+        // without keystore.properties, and under its own package so a generation run (which AGP
+        // ends by uninstalling the target) never touches a real Slide install on the device.
+        // minifyEnabled stays false to match release.
+        benchmark {
+            initWith release
+            debuggable false
+            minifyEnabled false
+            // Lets Macrobenchmark read the startup trace from a non-debuggable build. Scoped to
+            // this build type so the release manifest is unchanged.
+            profileable true
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".benchmark"
+            matchingFallbacks = ['release']
+            resValue "string", "app_name", "Slide Benchmark"
+        }
     }
 
     packaging {
@@ -399,6 +416,9 @@ dependencies {
     implementation 'androidx.core:core:1.19.0'
     implementation 'androidx.fragment:fragment:1.8.9'
     implementation 'androidx.media:media:1.8.0'
+    // Installs the baseline profile (src/main/baselineProfiles) on first launch. Play compiles it
+    // at install time on its own; GitHub and F-Droid APKs only get it through this library.
+    implementation 'androidx.profileinstaller:profileinstaller:1.4.1'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.webkit:webkit:1.16.0'
     implementation 'com.google.android.material:material:1.14.0'
